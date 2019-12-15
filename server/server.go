@@ -1,11 +1,15 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	dcodec "urlshortener/codec"
@@ -83,6 +87,9 @@ func (rs *RedirectServer) ShortenHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func Run(serverConfig *miscellaneous.ServerConfig) {
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
 	rs := &RedirectServer{codec: dcodec.New(),
 		storage: &memory.URLStorage{
 			URLs:     make([]*memory.URLItem, 0),
@@ -103,5 +110,23 @@ func Run(serverConfig *miscellaneous.ServerConfig) {
 		ReadTimeout:  time.Duration(int64(serverConfig.ReadTimeout) * time.Second.Nanoseconds()),
 	}
 
-	log.Fatal(srv.ListenAndServe())
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("%s listen failed with: %v\n", ProductName, err)
+		}
+	}()
+
+	<-done
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+
+	defer func() {
+		cancel()
+	}()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("Couldn't shut %s down:%+v", ProductName, err)
+	}
+
+	log.Printf("%s normal exit\n", ProductName)
 }
