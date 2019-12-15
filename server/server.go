@@ -10,7 +10,7 @@ import (
 
 	dcodec "urlshortener/codec"
 	"urlshortener/miscellaneous"
-	"urlshortener/urlstorage"
+	"urlshortener/storage/memory"
 
 	"github.com/gorilla/mux"
 )
@@ -84,8 +84,8 @@ func (rs *RedirectServer) ShortenHandler(w http.ResponseWriter, r *http.Request)
 
 func Run(serverConfig *miscellaneous.ServerConfig) {
 	rs := &RedirectServer{codec: dcodec.New(),
-		storage: &urlstorage.URLStorage{
-			URLs:     make([]*urlstorage.URLItem, 0),
+		storage: &memory.URLStorage{
+			URLs:     make([]*memory.URLItem, 0),
 			URLsHash: make(map[string]string),
 		},
 	}

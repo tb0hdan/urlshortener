@@ -2,11 +2,11 @@ package server
 
 import (
 	dcodec "urlshortener/codec"
-	"urlshortener/urlstorage"
+	"urlshortener/storage"
 )
 
 type RedirectServer struct {
 	codec       *dcodec.URLCodec
-	storage     *urlstorage.URLStorage
+	storage     storage.GenericStorage
 	templateDir string
 }

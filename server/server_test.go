@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	dcodec "urlshortener/codec"
-	"urlshortener/urlstorage"
+	"urlshortener/storage/memory"
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -42,8 +42,8 @@ func TestRedirectServer_CatchAllHandler(t *testing.T) {
 	}
 
 	s := &RedirectServer{templateDir: "../templates", codec: dcodec.New(),
-		storage: &urlstorage.URLStorage{
-			URLs:     make([]*urlstorage.URLItem, 0),
+		storage: &memory.URLStorage{
+			URLs:     make([]*memory.URLItem, 0),
 			URLsHash: make(map[string]string),
 		},
 	}
@@ -74,8 +74,8 @@ func TestRedirectServer_ShortenHandler(t *testing.T) {
 	}
 
 	s := &RedirectServer{templateDir: "../templates", codec: dcodec.New(),
-		storage: &urlstorage.URLStorage{
-			URLs:     make([]*urlstorage.URLItem, 0),
+		storage: &memory.URLStorage{
+			URLs:     make([]*memory.URLItem, 0),
 			URLsHash: make(map[string]string),
 		},
 	}

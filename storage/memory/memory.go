@@ -1,4 +1,4 @@
-package urlstorage
+package memory
 
 func (us *URLStorage) GetByID(urlID int64) (url string) {
 	us.m.RLock()
