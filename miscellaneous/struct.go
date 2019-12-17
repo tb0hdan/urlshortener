@@ -1,5 +1,6 @@
 package miscellaneous
 
+// BuildInfo - store build information (for redistributable binaries)
 type BuildInfo struct {
 	Build,
 	BuildDate,
@@ -7,6 +8,7 @@ type BuildInfo struct {
 	Version string
 }
 
+// ServerConfig - store HTTP server configuration
 type ServerConfig struct {
 	BuildInfo         *BuildInfo
 	Bind              string

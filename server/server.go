@@ -19,6 +19,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// IndexHandler - process requests to index page
 func (rs *RedirectServer) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles(fmt.Sprintf("%s/index.html", rs.templateDir)))
 
@@ -26,6 +27,7 @@ func (rs *RedirectServer) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	_ = tmpl.Execute(w, "")
 }
 
+// CatchAllHandler - catch all request URIs and dispatch them accordingly
 func (rs *RedirectServer) CatchAllHandler(w http.ResponseWriter, r *http.Request) {
 	if r.RequestURI == "/" {
 		rs.IndexHandler(w, r)
@@ -47,6 +49,7 @@ func (rs *RedirectServer) CatchAllHandler(w http.ResponseWriter, r *http.Request
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
+// ShortenHandler - process URL shortening requests. Only POST is allowed.
 func (rs *RedirectServer) ShortenHandler(w http.ResponseWriter, r *http.Request) {
 	var (
 		urlID    int64
@@ -86,6 +89,7 @@ func (rs *RedirectServer) ShortenHandler(w http.ResponseWriter, r *http.Request)
 	_ = tmpl.Execute(w, fmt.Sprintf("%s -> %s", url, shortURL))
 }
 
+// Run - Run URL shortener HTTP server
 func Run(serverConfig *miscellaneous.ServerConfig) {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)

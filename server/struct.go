@@ -5,6 +5,7 @@ import (
 	"urlshortener/storage"
 )
 
+// RedirectServer - URL shortener HTTP server structure with bound methods
 type RedirectServer struct {
 	codec       *dcodec.URLCodec
 	storage     storage.GenericStorage
