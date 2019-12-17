@@ -90,11 +90,13 @@ func Run(serverConfig *miscellaneous.ServerConfig) {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	rs := &RedirectServer{codec: dcodec.New(),
+	rs := &RedirectServer{
+		codec: dcodec.New(),
 		storage: &memory.URLStorage{
 			URLs:     make([]*memory.URLItem, 0),
 			URLsHash: make(map[string]string),
 		},
+		templateDir: serverConfig.TemplateDirectory,
 	}
 	r := mux.NewRouter()
 	r.HandleFunc("/index.{string}", rs.IndexHandler)
