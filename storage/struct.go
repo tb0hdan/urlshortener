@@ -10,6 +10,6 @@ type GenericStorage interface {
 	Add(short, long string) (urlID int64)
 	// Len - Return storage length (unsafe for concurrent access)
 	Len() (storageLen int64)
-	// Len - Return storage length
+	// LenSafe - Return storage length
 	LenSafe() (storageLen int64)
 }
