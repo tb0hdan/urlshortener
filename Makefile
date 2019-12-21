@@ -3,7 +3,7 @@ BDATE = $(shell date -u '+%Y-%m-%d_%I:%M:%S%p_UTC')
 GO_VERSION = $(shell go version|awk '{print $$3}')
 VERSION = $(shell cat ./VERSION)
 TESTS = test-server
-LINTS = lint-codec lint-miscellaneous lint-server lint-storage lint-storage/memory
+LINTS = lint-main.go lint-codec lint-miscellaneous lint-server lint-storage lint-storage/memory
 all: lint slow-lint test build
 
 test: $(TESTS)
