@@ -42,10 +42,7 @@ func TestRedirectServer_CatchAllHandler(t *testing.T) {
 	}
 
 	s := &RedirectServer{templateDir: "../templates", codec: dcodec.New(),
-		storage: &memory.URLStorage{
-			URLs:     make([]*memory.URLItem, 0),
-			URLsHash: make(map[string]string),
-		},
+		storage: memory.NewStorage(),
 	}
 	rr := httptest.NewRecorder()
 
@@ -74,10 +71,7 @@ func TestRedirectServer_ShortenHandler(t *testing.T) {
 	}
 
 	s := &RedirectServer{templateDir: "../templates", codec: dcodec.New(),
-		storage: &memory.URLStorage{
-			URLs:     make([]*memory.URLItem, 0),
-			URLsHash: make(map[string]string),
-		},
+		storage: memory.NewStorage(),
 	}
 
 	rr := httptest.NewRecorder()

@@ -1,60 +1,71 @@
 package memory
 
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/tb0hdan/memcache"
+)
+
+// Logger - log.Logger extension
+type Logger struct {
+	st *log.Logger
+}
+
+// Printf - same as log.Printf
+func (l *Logger) Printf(fmt string, args ...interface{}) {
+	l.st.Printf(fmt, args...)
+}
+
+// Debug - same as log.Println
+func (l *Logger) Debug(s ...interface{}) {
+	l.st.Println(s...)
+}
+
+// NewLog - Create new logger instance
+func NewLog() *Logger {
+	return &Logger{st: log.New(os.Stderr, "", log.LstdFlags)}
+}
+
+// Storage - URL storage based on memcache.CacheType
+type Storage struct {
+	cache *memcache.CacheType
+}
+
 // GetByID - return URL value by its integer id
-func (us *URLStorage) GetByID(urlID int64) (url string) {
-	us.m.RLock()
-	defer us.m.RUnlock()
-
-	if urlID < 0 {
-		return ""
-	}
-
-	if urlID <= us.Len() {
-		urlItem := us.URLs[urlID-1]
-		url = urlItem.Long
-	}
-
-	return
+func (m *Storage) GetByID(urlID int64) (url string) {
+	return fmt.Sprintf("%s", m.cache.GetByID(urlID))
 }
 
 // GetByLongURL - check whether long URL is in storage
-func (us *URLStorage) GetByLongURL(long string) (value string, ok bool) {
-	us.m.RLock()
-	defer us.m.RUnlock()
-	value, ok = us.URLsHash[long]
+func (m *Storage) GetByLongURL(long string) (value string, ok bool) {
+	val, ok := m.cache.Get(long)
+	if ok {
+		value = val.(string)
+	}
 
 	return
 }
 
 // Add - Add shortened and original URL to storage and return its id
-func (us *URLStorage) Add(short, long string) (urlID int64) {
-	if _, ok := us.GetByLongURL(long); ok {
-		return 0
-	}
-
-	us.m.Lock()
-	defer us.m.Unlock()
-
-	us.URLs = append(us.URLs, &URLItem{
-		Short: short,
-		Long:  long,
-	})
-	us.URLsHash[long] = short
-
-	return us.Len()
+func (m *Storage) Add(short, long string) (urlID int64) {
+	return m.cache.Add(long, short)
 }
 
 // Len - Return storage length (unsafe for concurrent access)
-func (us *URLStorage) Len() (storageLen int64) {
-	storageLen = int64(len(us.URLs))
-	return
+func (m *Storage) Len() (storageLen int64) {
+	return m.cache.Len()
 }
 
 // LenSafe - Return storage length
-func (us *URLStorage) LenSafe() (storageLen int64) {
-	us.m.RLock()
-	defer us.m.RUnlock()
-	storageLen = us.Len()
+func (m *Storage) LenSafe() (storageLen int64) {
+	return m.cache.LenSafe()
+}
 
-	return
+// NewStorage - New memory storage instance
+func NewStorage() *Storage {
+	return &Storage{
+		cache: memcache.New(NewLog()),
+	}
 }

@@ -16,6 +16,8 @@ import (
 	"urlshortener/miscellaneous"
 	"urlshortener/storage/memory"
 
+	//"urlshortener/storage/memory"
+
 	"github.com/gorilla/mux"
 )
 
@@ -95,11 +97,8 @@ func Run(serverConfig *miscellaneous.ServerConfig) {
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	rs := &RedirectServer{
-		codec: dcodec.New(),
-		storage: &memory.URLStorage{
-			URLs:     make([]*memory.URLItem, 0),
-			URLsHash: make(map[string]string),
-		},
+		codec:       dcodec.New(),
+		storage:     memory.NewStorage(),
 		templateDir: serverConfig.TemplateDirectory,
 	}
 	r := mux.NewRouter()
